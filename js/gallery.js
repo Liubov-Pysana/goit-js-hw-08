@@ -47,10 +47,13 @@ const images = [
 ];
 
 const markup = images
-    .map(({ preview, description }) => {
+    .map(({ original, preview, description }) => {
         return `
-        <li>
-            <img src="${preview}" alt="${description}" />
+        <li class="gallery-item">
+            <a class="gallery-link" href="${original}" onclick="event.preventDefault()">
+                <img class="gallery-image" src="${preview}" alt="${description}" data-source="${original}"/>
+            </a>
+        
         </li>
     `;
     })
@@ -59,7 +62,33 @@ const markup = images
 console.log(markup);
 
 document.querySelector(".gallery").innerHTML = markup;
-// gallery.innerHTML = markup;
 document.querySelector(".gallery").addEventListener("click", (event) => {
     console.log(event.target);
+});
+
+document.querySelector(".gallery").addEventListener("click", onGalleryItemClick);
+
+function onGalleryItemClick(event) {
+    event.preventDefault();
+
+    if (event.target.classList.contains("gallery-image")) {
+        const largeImageUrl = event.target.dataset.source;
+        console.log(largeImageUrl);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const gallery = document.querySelector(".gallery");
+
+    gallery.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        if (event.target.nodeName === "IMG") {
+            const largeImageURL = event.target.dataset.source;
+            const instance = basicLightbox.create(`
+                <img src="${largeImageURL}" width="800" height="600">
+            `);
+            instance.show();
+        }
+    });
 });
